@@ -1,5 +1,6 @@
 from tkinter import*
 from tkinter import ttk
+import pymysql
 
 # ======Class Define====== #
 
@@ -93,28 +94,30 @@ class Student:
 
         scrollX= Scrollbar(tableFrame, orient= HORIZONTAL)
         scrollY = Scrollbar(tableFrame, orient=VERTICAL)
-        Student_table= ttk.Treeview(tableFrame, column=("Roll", "Name", "Email", "Gender", "Contact", "DOB", "Result"), xscrollcommand=scrollX.set, yscrollcommand=scrollY.set)
+        self.Student_table= ttk.Treeview(tableFrame, column=("Roll", "Name", "Email", "Gender", "Contact", "DOB", "Result"), xscrollcommand=scrollX.set, yscrollcommand=scrollY.set)
         scrollX.pack(side= BOTTOM, fill= X)
-        scrollX.config(command=Student_table.xview)
+        scrollX.config(command=self.Student_table.xview)
         scrollY.pack(side=RIGHT, fill=Y)
-        scrollY.config(command=Student_table.yview)
+        scrollY.config(command=self.Student_table.yview)
 
-        Student_table.heading("Roll",text="Student ID")
-        Student_table.heading("Name", text="Student Name")
-        Student_table.heading("Email", text="Email")
-        Student_table.heading("Gender", text="Gender")
-        Student_table.heading("Contact", text="Contact No")
-        Student_table.heading("DOB", text="Date of Birth")
-        Student_table.heading("Result", text="SSC Result")
+        self.Student_table.heading("Roll",text="Student ID")
+        self.Student_table.heading("Name", text="Student Name")
+        self.Student_table.heading("Email", text="Email")
+        self.Student_table.heading("Gender", text="Gender")
+        self.Student_table.heading("Contact", text="Contact No")
+        self.Student_table.heading("DOB", text="Date of Birth")
+        self.Student_table.heading("Result", text="SSC Result")
 
-        Student_table.column("Roll", width= 150)
-        Student_table.column("Name", width=150)
-        Student_table.column("Gender", width=100)
-        Student_table.column("DOB", width=150)
-        Student_table.column("Result", width=100)
+        self.Student_table.column("Roll", width= 150)
+        self.Student_table.column("Name", width=150)
+        self.Student_table.column("Gender", width=100)
+        self.Student_table.column("DOB", width=150)
+        self.Student_table.column("Result", width=100)
 
-        Student_table['show'] = 'headings'
-        Student_table.pack(fill= BOTH, expand= 1)
+        self.Student_table['show'] = 'headings'
+        self.Student_table.pack(fill= BOTH, expand= 1)
+        self.Student_table.bind("<ButtonRelease-1>",self.getCursor)
+        self.fetch_data()
 
 
         # ======Button Frame:====== #
@@ -122,10 +125,90 @@ class Student:
         btnFrame = Frame(manageFrame, bd=4, relief=RIDGE, bg="#393E46")
         btnFrame.place(x=10, y=510, width=430)
 
-        Addbtn = Button(btnFrame, text="Add", width=11).grid(row=0, column=0, padx=8.5, pady=5)
-        Updatebtn = Button(btnFrame, text="Update", width=11).grid(row=0, column=1, padx=8.5, pady=5)
-        Clearbtn = Button(btnFrame, text="Clear", width=11).grid(row=0, column=2, padx=8.5, pady=5)
-        Deletetn = Button(btnFrame, text="Delete", width=11).grid(row=0, column=3, padx=8.5, pady=5)
+        Addbtn = Button(btnFrame, command=self.addStudents, text="Add", width=11).grid(row=0, column=0, padx=8.5, pady=5)
+        Updatebtn = Button(btnFrame, command= self.update_data, text="Update", width=11).grid(row=0, column=1, padx=8.5, pady=5)
+        Clearbtn = Button(btnFrame, command= self.clear, text="Clear", width=11).grid(row=0, column=2, padx=8.5, pady=5)
+        Deletetn = Button(btnFrame, command= self.delete_data, text="Delete", width=11).grid(row=0, column=3, padx=8.5, pady=5)
+
+    # ======My SQL Connection====== #
+    def addStudents(self):
+        con = pymysql.connect(host='localhost', user='root',password='',database='cms')
+        cur = con.cursor()
+        cur.execute("insert into students values(%s,%s,%s,%s,%s,%s,%s)",(
+            self.RollNo_var.get(),
+            self.Name_var.get(),
+            self.Email_var.get(),
+            self.Gender_var.get(),
+            self.Contact_var.get(),
+            self.DOB_var.get(),
+            self.Result_var.get()))
+
+        con.commit()
+        self.clear()
+        self.fetch_data()
+        con.close()
+
+    def fetch_data(self):
+        con = pymysql.connect(host='localhost', user='root', password='', database='cms')
+        cur = con.cursor()
+        cur.execute("select * from students")
+        rows = cur.fetchall()
+        if len(rows) != 0:
+            self.Student_table.delete(*self.Student_table.get_children())
+            for row in rows:
+                self.Student_table.insert("", END, values= row)
+            con.commit()
+        con.close()
+
+    def clear(self):
+        self.RollNo_var.set("")
+        self.Name_var.set("")
+        self.Email_var.set("")
+        self.Gender_var.set("")
+        self.Contact_var.set("")
+        self.DOB_var.set("")
+        self.Result_var.set("")
+
+    def getCursor(self, ev):
+        cursor_row = self.Student_table.focus()
+        contents = self.Student_table.item(cursor_row)
+        row = contents['values']
+        self.RollNo_var.set(row[0])
+        self.Name_var.set(row[1])
+        self.Email_var.set(row[2])
+        self.Gender_var.set(row[3])
+        self.Contact_var.set(row[4])
+        self.DOB_var.set(row[5])
+        self.Result_var.set(row[6])
+
+    def update_data(self):
+        con = pymysql.connect(host='localhost', user='root', password='', database='cms')
+        cur = con.cursor()
+        cur.execute("update students set Roll= %s,Name= %s, Email= %s,Gender= %s,Contact= %s,Dob= %s,Result= %s", (
+            self.RollNo_var.get(),
+            self.Name_var.get(),
+            self.Email_var.get(),
+            self.Gender_var.get(),
+            self.Contact_var.get(),
+            self.DOB_var.get(),
+            self.Result_var.get()))
+
+        con.commit()
+        self.clear()
+        self.fetch_data()
+        con.close()
+
+    def delete_data(self):
+        con = pymysql.connect(host='localhost', user='root', password='', database='cms')
+        cur = con.cursor()
+        cur.execute("delete from students where Roll= %s", self.RollNo_var.get())
+        con.commit()
+        con.close()
+        self.clear()
+        self.fetch_data()
+
+
+
 
 
 # ======Main Function====== #
