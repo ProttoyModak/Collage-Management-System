@@ -8,9 +8,11 @@ class Student:
             self.root.geometry("1350x750+0+0")
             self.root.configure(background="#393E46")
 
+
             # ======Project Title====== #
             title = Label(self.root, text="Collage Management System", bg="#222831", fg="#00ADB5", bd=20, relief=GROOVE, font=("merriweather", 40, "bold"), padx=2, pady=6)
             title.pack(side=TOP, fill=X)
+
 
             # ======Project Frame: Adding section====== #
             manageFrame= Frame(self.root,bd=4, relief=RIDGE, bg="#006778")
@@ -55,6 +57,7 @@ class Student:
             txtGPA = Entry(manageFrame, font=("times new roman", 15, "bold"), bd=5, relief=GROOVE)
             txtGPA.grid(row=7, column=1, padx=20, pady=10, sticky="w")
 
+
             # ======Project Frame: Detail section====== #
             detailFrame = Frame(self.root, bd=4, relief=RIDGE, bg= "#5584AC")
             detailFrame.place(x=500, y=130, width=825, height=600)
@@ -69,6 +72,7 @@ class Student:
             txtSearch.grid(row=0, column=2, padx=10, pady=10, sticky="w")
             Searchbtn = Button(detailFrame, text="Search", width= 10).grid(row=0, column= 3, padx=10, pady= 10)
             Showbtn = Button(detailFrame, text="Show all", width=10).grid(row=0, column=4, padx=10, pady=10)
+
 
             # ======Project Frame: Detail table section====== #
             tableFrame= Frame(detailFrame, bd= 4, relief= RIDGE)
@@ -98,6 +102,18 @@ class Student:
 
             Student_table['show'] = 'headings'
             Student_table.pack(fill= BOTH, expand= 1)
+
+
+            # ======Button Frame:====== #
+            btnFrame = Frame(manageFrame, bd=4, relief=RIDGE, bg="#393E46")
+            btnFrame.place(x=10, y=510, width=430)
+
+            Addbtn = Button(btnFrame, text="Add", width=11).grid(row=0, column=0, padx=8.5, pady=5)
+            Updatebtn = Button(btnFrame, text="Update", width=11).grid(row=0, column=1, padx=8.5, pady=5)
+            Clearbtn = Button(btnFrame, text="Clear", width=11).grid(row=0, column=2, padx=8.5, pady=5)
+            Deletetn = Button(btnFrame, text="Delete", width=11).grid(row=0, column=3, padx=8.5, pady=5)
+
+
 
 
 # ======Objects====== #
