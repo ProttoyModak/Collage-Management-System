@@ -55,6 +55,21 @@ class Student:
             txtGPA = Entry(manageFrame, font=("times new roman", 15, "bold"), bd=5, relief=GROOVE)
             txtGPA.grid(row=7, column=1, padx=20, pady=10, sticky="w")
 
+            # ======Project Frame: Detail section====== #
+            detailFrame = Frame(self.root, bd=4, relief=RIDGE, bg= "#5584AC")
+            detailFrame.place(x=500, y=130, width=825, height=600)
+
+            lblSearch = Label(detailFrame, text="Search Student: ", font=("times new roman", 20, "bold"), bg="#5584AC", fg="#FFFFFF")
+            lblSearch.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+            comboSearch = ttk.Combobox(detailFrame, width=12, font=("times new roman", 15, "bold"), state="readonly")
+            comboSearch['values'] = ("ID", "Name", "Contact No")
+            comboSearch.grid(row=0, column=1, pady=10, sticky="w")
+
+            txtSearch = Entry(detailFrame, font=("times new roman", 14, "bold"), bd=5, relief=GROOVE)
+            txtSearch.grid(row=0, column=2, padx=10, pady=10, sticky="w")
+            Searchbtn = Button(detailFrame, text="Search", width= 10).grid(row=0, column= 3, padx=10, pady= 10)
+            Showbtn = Button(detailFrame, text="Show all", width=10).grid(row=0, column=4, padx=10, pady=10)
+
 
 # ======Objects====== #
 root = Tk()
