@@ -70,6 +70,35 @@ class Student:
             Searchbtn = Button(detailFrame, text="Search", width= 10).grid(row=0, column= 3, padx=10, pady= 10)
             Showbtn = Button(detailFrame, text="Show all", width=10).grid(row=0, column=4, padx=10, pady=10)
 
+            # ======Project Frame: Detail table section====== #
+            tableFrame= Frame(detailFrame, bd= 4, relief= RIDGE)
+            tableFrame.place(x= 10, y= 70, width= 795, height= 510)
+
+            scrollX= Scrollbar(tableFrame, orient= HORIZONTAL)
+            scrollY = Scrollbar(tableFrame, orient=VERTICAL)
+            Student_table= ttk.Treeview(tableFrame, column=("Roll", "Name", "Email", "Gender", "Contact", "DOB", "Result"), xscrollcommand=scrollX.set, yscrollcommand=scrollY.set)
+            scrollX.pack(side= BOTTOM, fill= X)
+            scrollX.config(command=Student_table.xview)
+            scrollY.pack(side=RIGHT, fill=Y)
+            scrollY.config(command=Student_table.yview)
+
+            Student_table.heading("Roll",text="Student ID")
+            Student_table.heading("Name", text="Student Name")
+            Student_table.heading("Email", text="Email")
+            Student_table.heading("Gender", text="Gender")
+            Student_table.heading("Contact", text="Contact No")
+            Student_table.heading("DOB", text="Date of Birth")
+            Student_table.heading("Result", text="SSC Result")
+
+            Student_table.column("Roll", width= 150)
+            Student_table.column("Name", width=150)
+            Student_table.column("Gender", width=100)
+            Student_table.column("DOB", width=150)
+            Student_table.column("Result", width=100)
+
+            Student_table['show'] = 'headings'
+            Student_table.pack(fill= BOTH, expand= 1)
+
 
 # ======Objects====== #
 root = Tk()
