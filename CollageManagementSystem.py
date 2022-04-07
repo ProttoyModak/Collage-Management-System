@@ -1,5 +1,6 @@
 from tkinter import*
 from tkinter import ttk
+from tkinter import messagebox
 import pymysql
 
 # ======Class Define====== #
@@ -20,6 +21,9 @@ class Student:
         self.Contact_var = StringVar()
         self.DOB_var = StringVar()
         self.Result_var = StringVar()
+
+        self.Search_by = StringVar()
+        self.Search_text = StringVar()
 
 
         # ======Project Title====== #
@@ -78,14 +82,14 @@ class Student:
 
         lblSearch = Label(detailFrame, text="Search Student: ", font=("times new roman", 20, "bold"), bg="#5584AC", fg="#FFFFFF")
         lblSearch.grid(row=0, column=0, padx=10, pady=10, sticky="w")
-        comboSearch = ttk.Combobox(detailFrame, width=12, font=("times new roman", 15, "bold"), state="readonly")
+        comboSearch = ttk.Combobox(detailFrame, textvariable= self.Search_by, width=12, font=("times new roman", 15, "bold"), state="readonly")
         comboSearch['values'] = ("ID", "Name", "Contact No")
         comboSearch.grid(row=0, column=1, pady=10, sticky="w")
 
-        txtSearch = Entry(detailFrame, font=("times new roman", 14, "bold"), bd=5, relief=GROOVE)
+        txtSearch = Entry(detailFrame, textvariable= self.Search_text, font=("times new roman", 14, "bold"), bd=5, relief=GROOVE)
         txtSearch.grid(row=0, column=2, padx=10, pady=10, sticky="w")
-        Searchbtn = Button(detailFrame, text="Search", width= 10).grid(row=0, column= 3, padx=10, pady= 10)
-        Showbtn = Button(detailFrame, text="Show all", width=10).grid(row=0, column=4, padx=10, pady=10)
+        Searchbtn = Button(detailFrame, command= self.search_data, text="Search", width= 10).grid(row=0, column= 3, padx=10, pady= 10)
+        Showbtn = Button(detailFrame, command= self.fetch_data, text="Show all", width=10).grid(row=0, column=4, padx=10, pady=10)
 
         # ======Project Frame: Detail table section====== #
 
@@ -132,21 +136,26 @@ class Student:
 
     # ======My SQL Connection====== #
     def addStudents(self):
-        con = pymysql.connect(host='localhost', user='root',password='',database='cms')
-        cur = con.cursor()
-        cur.execute("insert into students values(%s,%s,%s,%s,%s,%s,%s)",(
-            self.RollNo_var.get(),
-            self.Name_var.get(),
-            self.Email_var.get(),
-            self.Gender_var.get(),
-            self.Contact_var.get(),
-            self.DOB_var.get(),
-            self.Result_var.get()))
+        if self.RollNo_var.get() == "" or self.Name_var.get() == "":
+            messagebox.showerror("Error", "All fields are required")
 
-        con.commit()
-        self.clear()
-        self.fetch_data()
-        con.close()
+        else:
+            con = pymysql.connect(host='localhost', user='root',password='',database='cms')
+            cur = con.cursor()
+            cur.execute("insert into students values(%s,%s,%s,%s,%s,%s,%s)",(
+                self.RollNo_var.get(),
+                self.Name_var.get(),
+                self.Email_var.get(),
+                self.Gender_var.get(),
+                self.Contact_var.get(),
+                self.DOB_var.get(),
+                self.Result_var.get()))
+
+            con.commit()
+            self.clear()
+            self.fetch_data()
+            messagebox.showinfo("Successful", "Data added successfully")
+            con.close()
 
     def fetch_data(self):
         con = pymysql.connect(host='localhost', user='root', password='', database='cms')
@@ -206,6 +215,18 @@ class Student:
         con.close()
         self.clear()
         self.fetch_data()
+
+    def search_data(self):
+        con = pymysql.connect(host='localhost', user='root', password='', database='cms')
+        cur = con.cursor()
+        cur.execute("select * from students where"+str(self.Search_by.get())+" LIKE '%"+str(self.Search_text.get())+"%'")
+        rows = cur.fetchall()
+        if len(rows) != 0:
+            self.Student_table.delete(*self.Student_table.get_children())
+            for row in rows:
+                self.Student_table.insert("", END, values=row)
+            con.commit()
+        con.close()
 
 
 
